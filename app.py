@@ -30,12 +30,6 @@ class TaskManagerApp:
 
         @self.app.on_event("startup")
         async def startup_event():
-            # exit_stack = AsyncExitStack()
-            # try:
-            #     self.foundry_agent = await FoundryTaskAgent.create(exit_stack)
-            #     self._setup_routes(self.foundry_agent)
-            # finally:
-            #     await exit_stack.aclose() 
             self.exit_stack = AsyncExitStack()
             await self.exit_stack.__aenter__()
             self.foundry_agent = await FoundryTaskAgent.create(self.exit_stack)
