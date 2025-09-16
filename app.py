@@ -8,6 +8,8 @@ from api import create_api_routes
 from agent import FoundryTaskAgent
 from contextlib import AsyncExitStack
 
+# Load environment variables from .env file
+load_dotenv()
 
 class TaskManagerApp:
     """FastAPI application for task management with AI agents."""
@@ -37,6 +39,8 @@ class TaskManagerApp:
         
         @self.app.on_event("shutdown")
         async def shutdown_event():
+            # delete the Agent on Azure
+            self.foundry_agent.project_client.agents.delete_agent(self.foundry_agent.agent_id) 
             if self.exit_stack:
                 await self.exit_stack.__aexit__(None, None, None)
 
