@@ -37,14 +37,16 @@ async def connect_to_server(exit_stack: AsyncExitStack):
         return tool_func  
 
     functions_dict = {tool.name: make_tool_func(tool.name) for tool in tools}
-    mcp_function_tool = FunctionTool(functions=list(functions_dict.values())) 
+    # mcp_function_tool = FunctionTool(functions=list(functions_dict.values())) 
 
     print("\nConnected to server with tools:", [tool.name for tool in tools]) 
-    return mcp_function_tool
+    return functions_dict
 
 class FoundryTaskAgent:
-    def __init__(self, mcpTools: FunctionTool):
+    def __init__(self, functions_dict):
+        mcpTools = FunctionTool(functions=list(functions_dict.values()))
         self.tools = mcpTools
+        self.functions_dict = functions_dict
         self.project_client = None
         self.thread_id = None
         self.agent_id = None
@@ -78,7 +80,7 @@ class FoundryTaskAgent:
             self.agent_id = agent.id
 
             print(f"Created agent: {self.agent_id}")
-            
+
             # Create a thread for this session
             thread = self.project_client.agents.threads.create()
             self.thread_id = thread.id
@@ -95,5 +97,5 @@ class FoundryTaskAgent:
 
     @classmethod
     async def create(cls, exit_stack):
-        functiontool = await connect_to_server(exit_stack)
-        return cls(functiontool)
+        functionDics = await connect_to_server(exit_stack)
+        return cls(functionDics)

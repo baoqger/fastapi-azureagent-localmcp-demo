@@ -35,7 +35,7 @@ class TaskManagerApp:
             self.exit_stack = AsyncExitStack()
             await self.exit_stack.__aenter__()
             self.foundry_agent = await FoundryTaskAgent.create(self.exit_stack)
-            self._setup_routes(self.foundry_agent)
+            self._setup_routes()
         
         @self.app.on_event("shutdown")
         async def shutdown_event():
@@ -55,10 +55,10 @@ class TaskManagerApp:
             allow_headers=["*"],
         )
     
-    def _setup_routes(self, foundry_agent: FoundryTaskAgent):
+    def _setup_routes(self):
         """Set up API routes and static file serving."""
         # API routes
-        api_router = create_api_routes(foundry_agent)
+        api_router = create_api_routes(self.foundry_agent)
         self.app.include_router(api_router, prefix="/api")
     
     
